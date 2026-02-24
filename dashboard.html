@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KW 交易儀表板 | Trading Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #131722;
+            color: #d1d4dc;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: #1e222d;
+            padding: 15px 30px;
+            border-bottom: 1px solid #2a2e39;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .last-update {
+            font-size: 13px;
+            color: #787b86;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: #1e222d;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #2a2e39;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+            border-bottom: 1px solid #2a2e39;
+            padding-bottom: 10px;
+        }
+
+        .stock-card {
+            background: #2a2e39;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid;
+        }
+
+        .stock-card.strong { border-left-color: #26a69a; }
+        .stock-card.watch { border-left-color: #4fc3f7; }
+        .stock-card.weak { border-left-color: #ef5350; }
+
+        .stock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .stock-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .stock-code {
+            font-size: 12px;
+            color: #787b86;
+        }
+
+        .stock-price {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .price-up { color: #26a69a; }
+        .price-down { color: #ef5350; }
+
+        .stock-change {
+            font-size: 14px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+
+        .change-up {
+            background: rgba(38, 166, 154, 0.2);
+            color: #26a69a;
+        }
+
+        .change-down {
+            background: rgba(239, 83, 80, 0.2);
+            color: #ef5350;
+        }
+
+        .stock-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .info-label {
+            color: #787b86;
+        }
+
+        .info-value {
+            color: #d1d4dc;
+            font-weight: 500;
+        }
+
+        .signal-status {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .signal {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .signal.green { background: rgba(38, 166, 154, 0.2); }
+        .signal.red { background: rgba(239, 83, 80, 0.2); }
+
+        .rating {
+            color: #ffd700;
+            font-size: 14px;
+        }
+
+        .news-item {
+            background: #2a2e39;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid #4fc3f7;
+        }
+
+        .news-time {
+            font-size: 11px;
+            color: #787b86;
+            margin-bottom: 5px;
+        }
+
+        .news-title {
+            font-size: 14px;
+            color: #d1d4dc;
+            margin-bottom: 5px;
+        }
+
+        .news-tag {
+            display: inline-block;
+            background: rgba(79, 195, 247, 0.2);
+            color: #4fc3f7;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-right: 5px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #2a2e39;
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .check-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .check-icon.pass {
+            background: rgba(38, 166, 154, 0.2);
+            color: #26a69a;
+        }
+
+        .check-icon.fail {
+            background: rgba(239, 83, 80, 0.2);
+            color: #ef5350;
+        }
+
+        .action-btn {
+            background: #4fc3f7;
+            color: #131722;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            background: #29b6f6;
+        }
+
+        .action-btn.danger {
+            background: #ef5350;
+            color: #fff;
+        }
+
+        .alert-box {
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .alert-title {
+            color: #ffc107;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .youtube-section {
+            background: #2a2e39;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .youtube-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .youtube-stocks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .youtube-tag {
+            background: rgba(255, 82, 82, 0.2);
+            color: #ff5252;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 KW 交易儀表板</h1>
+        <div class="last-update">最後更新：2026-02-24 10:58 GMT+8</div>
+    </div>
+
+    <div class="container">
+        <!-- 左側：持股 + 觀察清單 -->
+        <div class="left-panel">
+            <div class="panel">
+                <div class="panel-title">🔥 目前持股</div>
+                
+                <div class="stock-card strong">
+                    <div class="stock-header">
+                        <div>
+                            <div class="stock-name">山太士</div>
+                            <div class="stock-code">3595.TW</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="stock-price price-up">720</span>
+                            <span class="stock-change change-up">+10.4%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stock-info">
+                        <div class="info-row">
+                            <span class="info-label">進場價</span>
+                            <span class="info-value">待補</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">獲利率</span>
+                            <span class="info-value price-up">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">停損點</span>
+                            <span class="info-value">561 (MA10)</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">安全墊</span>
+                            <span class="info-value price-up">+28.3%</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">MA45</span>
+                            <span class="info-value">417</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">成交量</span>
+                            <span class="info-value">82.8萬</span>
+                        </div>
+                    </div>
+
+                    <div class="signal-status">
+                        <div class="signal green">✅</div>
+                        <div class="signal green">✅</div>
+                        <div class="signal green">✅</div>
+                        <div class="signal green">✅</div>
+                        <div class="signal green">✅</div>
+                    </div>
+                    <div style="font-size: 12px; color: #26a69a; margin-top: 8px;">
+                        續抱訊號：全滿 - 繼續持有
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" style="margin-top: 20px;">
+                <div class="panel-title">⭐ 觀察加碼標的</div>
+                
+                <div class="stock-card watch">
+                    <div class="stock-header">
+                        <div>
+                            <div class="stock-name">力積電</div>
+                            <div class="stock-code">6770.TW</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="stock-price price-up">73.4</span>
+                            <span class="stock-change change-up">+9.55%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="rating">⭐⭐⭐⭐⭐ 最穩健</div>
+                    
+                    <div class="stock-info">
+                        <div class="info-row">
+                            <span class="info-label">MA10</span>
+                            <span class="info-value">~68-70</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Stoch RSI</span>
+                            <span class="info-value">23 (低檔)</span>
+                        </div>
+                    </div>
+
+                    <button class="action-btn">✅ 建議加碼</button>
+                </div>
+
+                <div class="stock-card watch">
+                    <div class="stock-header">
+                        <div>
+                            <div class="stock-name">南電</div>
+                            <div class="stock-code">8046.TW</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="stock-price price-up">503</span>
+                            <span class="stock-change change-up">+9.95%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="rating">⭐⭐⭐⭐ 觀察突破</div>
+                    
+                    <div class="stock-info">
+                        <div class="info-row">
+                            <span class="info-label">MA10</span>
+                            <span class="info-value">~400-420</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Stoch RSI</span>
+                            <span class="info-value">82 (偏高)</span>
+                        </div>
+                    </div>
+
+                    <button class="action-btn" style="background: #787b86;">⏸️ 觀察站穩</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 中央：最新消息 + YouTube -->
+        <div class="center-panel">
+            <div class="panel">
+                <div class="panel-title">📰 今日市場動態</div>
+                
+                <div class="alert-box">
+                    <div class="alert-title">⚡ 今日重點</div>
+                    <div style="font-size: 13px;">PCB/載板族群集體噴發，山太士領漲 +10.4%，南電、景碩接近漲停。記憶體板塊同步上漲。</div>
+                </div>
+
+                <div class="news-item">
+                    <div class="news-time">2026-02-24 13:30</div>
+                    <div class="news-title">🚀 今日強勢股（>9%）</div>
+                    <div style="margin-top: 8px;">
+                        <span class="news-tag">山太士 +10.3%</span>
+                        <span class="news-tag">南電 +9.95%</span>
+                        <span class="news-tag">華新科 +9.96%</span>
+                        <span class="news-tag">景碩 +9.93%</span>
+                        <span class="news-tag">穩懋 +9.98%</span>
+                    </div>
+                </div>
+
+                <div class="news-item" style="border-left-color: #ffc107;">
+                    <div class="news-time">2026-02-24 10:00</div>
+                    <div class="news-title">📊 板塊觀察</div>
+                    <div style="font-size: 13px; margin-top: 5px;">
+                        • PCB/載板族群強勢（景碩、南電、欣興）<br>
+                        • 被動元件上漲（華新科、國巨）<br>
+                        • 記憶體走強（力積電、旺宏）
+                    </div>
+                </div>
+
+                <div class="news-item" style="border-left-color: #ef5350;">
+                    <div class="news-time">2026-02-24 10:00</div>
+                    <div class="news-title">⚠️ 下跌警示</div>
+                    <div style="font-size: 13px; margin-top: 5px;">
+                        • 一詮 -7.30% 需關注<br>
+                        • 旺矽 -2.50%<br>
+                        • 健策 -1.79%
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" style="margin-top: 20px;">
+                <div class="panel-title">📺 理財達人秀 - 潛在標的</div>
+                
+                <div class="youtube-section">
+                    <div class="youtube-title">🎬 最新一集（待更新）</div>
+                    <div style="font-size: 12px; color: #787b86; margin-bottom: 10px;">
+                        更新時間：-
+                    </div>
+                    <div class="youtube-stocks">
+                        <span class="youtube-tag">待抓取字幕</span>
+                    </div>
+                </div>
+
+                <div style="font-size: 12px; color: #787b86; margin-top: 10px;">
+                    💡 每日自動抓取東森財經理財達人秀最新影片，提取提到的標的
+                </div>
+            </div>
+
+            <div class="panel" style="margin-top: 20px;">
+                <div class="panel-title">📊 Minervini 美股篩選</div>
+                <div style="font-size: 13px; color: #787b86;">
+                    <a href="https://www.chartmill.com/trading-ideas/703-Mark-Minervini-Trend-Template-FA-Screen-6" 
+                       target="_blank" 
+                       style="color: #4fc3f7; text-decoration: none;">
+                        🔗 Chartmill 篩選器
+                    </a>
+                </div>
+                <div style="font-size: 12px; color: #787b86; margin-top: 10px;">
+                    待手動檢查並更新符合條件的美股標的
+                </div>
+            </div>
+        </div>
+
+        <!-- 右側：檢查清單 + 提醒 -->
+        <div class="right-panel">
+            <div class="panel">
+                <div class="panel-title">✅ 持股檢查清單</div>
+                <div style="font-size: 12px; color: #787b86; margin-bottom: 15px;">山太士 3595</div>
+                
+                <div class="checklist-item">
+                    <div class="check-icon pass">✓</div>
+                    <div>股價在 MA10 之上</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-icon pass">✓</div>
+                    <div>均線多頭排列</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-icon pass">✓</div>
+                    <div>成交量健康</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-icon pass">✓</div>
+                    <div>技術指標未超買</div>
+                </div>
+                <div class="checklist-item">
+                    <div class="check-icon pass">✓</div>
+                    <div>持續創新高</div>
+                </div>
+
+                <div style="background: rgba(38, 166, 154, 0.1); padding: 12px; border-radius: 6px; margin-top: 15px; text-align: center;">
+                    <div style="font-size: 14px; font-weight: 600; color: #26a69a;">
+                        ✅ 續抱訊號：全滿
+                    </div>
+                    <div style="font-size: 12px; color: #787b86; margin-top: 5px;">
+                        繼續持有，訊號未到不要賣
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" style="margin-top: 20px;">
+                <div class="panel-title">🚨 出場訊號</div>
+                
+                <div style="font-size: 13px; margin-bottom: 15px;">
+                    <div style="color: #787b86; margin-bottom: 8px;">強勢股（山太士）：</div>
+                    <div style="background: #2a2e39; padding: 10px; border-radius: 4px;">
+                        跌破 Daily MA10<br>
+                        <span style="color: #ef5350; font-weight: 600;">停損點：561</span>
+                    </div>
+                </div>
+
+                <div style="font-size: 13px;">
+                    <div style="color: #787b86; margin-bottom: 8px;">趨勢股：</div>
+                    <div style="background: #2a2e39; padding: 10px; border-radius: 4px;">
+                        跌破 Weekly MA10<br>
+                        <span style="color: #ef5350; font-weight: 600;">= Daily MA45</span>
+                    </div>
+                </div>
+
+                <div style="font-size: 11px; color: #787b86; margin-top: 15px; padding: 10px; background: #2a2e39; border-radius: 4px;">
+                    💡 只有訊號出現才賣出<br>
+                    不要因為恐懼而提前賣
+                </div>
+            </div>
+
+            <div class="panel" style="margin-top: 20px;">
+                <div class="panel-title">📅 本週待辦</div>
+                
+                <div style="font-size: 13px;">
+                    <div style="padding: 8px 0; border-bottom: 1px solid #2a2e39;">
+                        ⏳ 觀察力積電進場點
+                    </div>
+                    <div style="padding: 8px 0; border-bottom: 1px solid #2a2e39;">
+                        ⏳ 南電能否站穩 500
+                    </div>
+                    <div style="padding: 8px 0;">
+                        ⏳ 查詢法人買賣數據
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" style="margin-top: 20px;">
+                <div class="panel-title">💡 交易紀律提醒</div>
+                <div style="font-size: 12px; line-height: 1.8;">
+                    1. 訊號未到，不要賣<br>
+                    2. 用數據說服自己<br>
+                    3. 讓利潤奔跑<br>
+                    4. 記錄每次決策<br>
+                    5. 防守優先
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 自動更新時間戳
+        function updateTimestamp() {
+            const now = new Date();
+            const formatted = now.toLocaleString('zh-TW', { 
+                timeZone: 'Asia/Taipei',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.querySelector('.last-update').textContent = `最後更新：${formatted} GMT+8`;
+        }
+
+        // 每分鐘更新一次時間戳
+        setInterval(updateTimestamp, 60000);
+    </script>
+</body>
+</html>
