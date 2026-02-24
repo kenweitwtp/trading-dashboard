@@ -168,32 +168,75 @@
 
         .news-item {
             background: #2a2e39;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-left: 3px solid #4fc3f7;
+            border-radius: 8px;
+            padding: 0;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .news-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .news-content {
+            padding: 15px;
         }
 
         .news-time {
             font-size: 11px;
             color: #787b86;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .news-title {
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .news-desc {
+            font-size: 13px;
             color: #d1d4dc;
-            margin-bottom: 5px;
+            line-height: 1.5;
+            margin-bottom: 10px;
         }
 
         .news-tag {
             display: inline-block;
             background: rgba(79, 195, 247, 0.2);
             color: #4fc3f7;
-            padding: 2px 8px;
-            border-radius: 3px;
+            padding: 3px 10px;
+            border-radius: 4px;
             font-size: 11px;
             margin-right: 5px;
+            margin-top: 5px;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 900px) {
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .checklist-item {
@@ -434,35 +477,66 @@
                     <div style="font-size: 13px;">PCB/載板族群集體噴發，山太士領漲 +10.4%，南電、景碩接近漲停。記憶體板塊同步上漲。</div>
                 </div>
 
-                <div class="news-item">
-                    <div class="news-time">2026-02-24 13:30</div>
-                    <div class="news-title">🚀 今日強勢股（>9%）</div>
-                    <div style="margin-top: 8px;">
-                        <span class="news-tag">山太士 +10.3%</span>
-                        <span class="news-tag">南電 +9.95%</span>
-                        <span class="news-tag">華新科 +9.96%</span>
-                        <span class="news-tag">景碩 +9.93%</span>
-                        <span class="news-tag">穩懋 +9.98%</span>
+                <div class="news-grid">
+                    <div class="news-item">
+                        <div class="news-image">📈</div>
+                        <div class="news-content">
+                            <div class="news-time">2026-02-24 13:30</div>
+                            <div class="news-title">台股 PCB 族群領漲 山太士創新高</div>
+                            <div class="news-desc">
+                                PCB/載板族群今日集體噴發，山太士領漲 +10.4% 創歷史新高，南電、景碩接近漲停。市場預期 AI 伺服器需求持續強勁。
+                            </div>
+                            <div>
+                                <span class="news-tag">山太士 +10.3%</span>
+                                <span class="news-tag">南電 +9.95%</span>
+                                <span class="news-tag">景碩 +9.93%</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="news-item" style="border-left-color: #ffc107;">
-                    <div class="news-time">2026-02-24 10:00</div>
-                    <div class="news-title">📊 板塊觀察</div>
-                    <div style="font-size: 13px; margin-top: 5px;">
-                        • PCB/載板族群強勢（景碩、南電、欣興）<br>
-                        • 被動元件上漲（華新科、國巨）<br>
-                        • 記憶體走強（力積電、旺宏）
+                    <div class="news-item">
+                        <div class="news-image">💾</div>
+                        <div class="news-content">
+                            <div class="news-time">2026-02-24 11:00</div>
+                            <div class="news-title">記憶體板塊走強 力積電大漲</div>
+                            <div class="news-desc">
+                                記憶體類股今日表現亮眼，力積電上漲 9.55%，旺宏、華邦電同步走揚。外資看好記憶體產業景氣復甦。
+                            </div>
+                            <div>
+                                <span class="news-tag">力積電 +9.55%</span>
+                                <span class="news-tag">旺宏 +9.66%</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="news-item" style="border-left-color: #ef5350;">
-                    <div class="news-time">2026-02-24 10:00</div>
-                    <div class="news-title">⚠️ 下跌警示</div>
-                    <div style="font-size: 13px; margin-top: 5px;">
-                        • 一詮 -7.30% 需關注<br>
-                        • 旺矽 -2.50%<br>
-                        • 健策 -1.79%
+                    <div class="news-item">
+                        <div class="news-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">📡</div>
+                        <div class="news-content">
+                            <div class="news-time">2026-02-24 10:00</div>
+                            <div class="news-title">被動元件強勢 華新科接近漲停</div>
+                            <div class="news-desc">
+                                被動元件族群今日表現強勁，華新科上漲 9.96%，國巨同步走揚。市場預期電動車需求帶動 MLCC 訂單成長。
+                            </div>
+                            <div>
+                                <span class="news-tag">華新科 +9.96%</span>
+                                <span class="news-tag">國巨</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="news-item">
+                        <div class="news-image" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">⚠️</div>
+                        <div class="news-content">
+                            <div class="news-time">2026-02-24 13:30</div>
+                            <div class="news-title">下跌警示：一詮重挫 7%</div>
+                            <div class="news-desc">
+                                精密齒輪廠一詮今日下跌 7.30%，需留意後續走勢。另外旺矽、健策小幅下跌。
+                            </div>
+                            <div>
+                                <span class="news-tag" style="background: rgba(239, 83, 80, 0.2); color: #ef5350;">一詮 -7.30%</span>
+                                <span class="news-tag" style="background: rgba(239, 83, 80, 0.2); color: #ef5350;">旺矽 -2.50%</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
