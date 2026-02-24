@@ -1,0 +1,13 @@
+# Sensitive files
+.github-token
+*.token
+
+# Memory and personal files (keep local only)
+memory/
+AGENTS.md
+SOUL.md
+USER.md
+IDENTITY.md
+BOOTSTRAP.md
+HEARTBEAT.md
+TOOLS.md
