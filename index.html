@@ -622,7 +622,19 @@
             </div>
 
             <div class="panel" style="margin-top: 20px;">
-                <div class="panel-title">💡 交易紀律提醒</div>
+                <div class="panel-title">💡 今日心法</div>
+                <div id="daily-wisdom" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px; color: #fff; text-align: center;">
+                    <div style="font-size: 18px; font-weight: 600; line-height: 1.6; margin-bottom: 12px;" id="wisdom-text">
+                        「讓利潤奔跑，截斷虧損。」
+                    </div>
+                    <div style="font-size: 13px; opacity: 0.9;" id="wisdom-source">
+                        — 陳江挺《炒股的智慧》
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" style="margin-top: 20px;">
+                <div class="panel-title">📚 交易紀律</div>
                 <div style="font-size: 14px; line-height: 2; color: #34495e;">
                     1. 訊號未到，不要賣<br>
                     2. 用數據說服自己<br>
@@ -633,6 +645,50 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // 每日心法語錄庫
+        const wisdoms = [
+            { text: "止損是股市生存的第一法則。", source: "陳江挺《炒股的智慧》" },
+            { text: "讓利潤奔跑，截斷虧損。", source: "陳江挺《炒股的智慧》" },
+            { text: "不要因為賺了錢就急於落袋為安。", source: "陳江挺《炒股的智慧》" },
+            { text: "紀律是成功交易的基石。", source: "陳江挺《炒股的智慧》" },
+            { text: "計劃你的交易，交易你的計劃。", source: "陳江挺《炒股的智慧》" },
+            { text: "趨勢是你的朋友。", source: "陳江挺《炒股的智慧》" },
+            { text: "耐心等待是最難的技術之一。", source: "陳江挺《炒股的智慧》" },
+            { text: "好的交易者管理風險，糟糕的交易者追逐利潤。", source: "Jack Schwager《金融怪傑》" },
+            { text: "最賺錢的交易往往是最無聊的。", source: "Jack Schwager《金融怪傑》" },
+            { text: "等待正確的機會，然後全力出擊。", source: "Jack Schwager《金融怪傑》" },
+            { text: "每一次虧損都是一堂課。", source: "Jack Schwager《金融怪傑》" },
+            { text: "市場會測試你的每一個弱點。", source: "Jack Schwager《金融怪傑》" },
+            { text: "找到適合自己的方法，然後堅持。", source: "Jack Schwager《金融怪傑》" },
+            { text: "沒有聖杯，只有紀律。", source: "Jack Schwager《金融怪傑》" },
+            { text: "只買處於上升趨勢的股票。", source: "Mark Minervini《超級績效》" },
+            { text: "股價創新高是好事，不是壞事。", source: "Mark Minervini《超級績效》" },
+            { text: "強勢股會變得更強，弱勢股會變得更弱。", source: "Mark Minervini《超級績效》" },
+            { text: "讓贏家繼續跑，賣掉輸家。", source: "Mark Minervini《超級績效》" },
+            { text: "不要太早獲利了結，除非趨勢改變。", source: "Mark Minervini《超級績效》" },
+            { text: "快速認賠是專業交易者的特質。", source: "Mark Minervini《超級績效》" },
+            { text: "賣出的唯一理由是訊號出現，不是恐懼。", source: "KW 專屬心法" },
+            { text: "沒有跌破 MA10，就不要賣。", source: "KW 專屬心法" },
+            { text: "讓數據決定，而不是情緒。", source: "KW 專屬心法" },
+            { text: "你的選股能力已經被驗證，現在需要的是持股信心。", source: "KW 專屬心法" },
+            { text: "趨勢沒變，就不要動。", source: "KW 專屬心法" }
+        ];
+
+        // 根據日期選擇心法（每天固定一條）
+        function getDailyWisdom() {
+            const today = new Date();
+            const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+            const index = dayOfYear % wisdoms.length;
+            return wisdoms[index];
+        }
+
+        // 顯示今日心法
+        const wisdom = getDailyWisdom();
+        document.getElementById('wisdom-text').textContent = `「${wisdom.text}」`;
+        document.getElementById('wisdom-source').textContent = `— ${wisdom.source}`;
+    </script>
 
     <script>
         // 創建走勢圖
