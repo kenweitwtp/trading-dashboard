@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KW 交易儀表板 | Trading Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -13,29 +14,30 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: #131722;
-            color: #d1d4dc;
+            background: #f5f7fa;
+            color: #2c3e50;
             line-height: 1.6;
         }
 
         .header {
-            background: #1e222d;
-            padding: 15px 30px;
-            border-bottom: 1px solid #2a2e39;
+            background: #fff;
+            padding: 20px 30px;
+            border-bottom: 2px solid #e8ecf1;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         .header h1 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
         }
 
         .last-update {
             font-size: 13px;
-            color: #787b86;
+            color: #7f8c8d;
         }
 
         .container {
@@ -48,82 +50,82 @@
         }
 
         .panel {
-            background: #1e222d;
-            border-radius: 8px;
-            padding: 20px;
-            border: 1px solid #2a2e39;
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e8ecf1;
         }
 
         .panel-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #fff;
-            border-bottom: 1px solid #2a2e39;
-            padding-bottom: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 12px;
         }
 
         .stock-card {
-            background: #2a2e39;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-left: 4px solid;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .stock-card.strong { border-left-color: #26a69a; }
-        .stock-card.watch { border-left-color: #4fc3f7; }
-        .stock-card.weak { border-left-color: #ef5350; }
+        .stock-card.watch {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+        }
 
         .stock-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .stock-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .stock-code {
-            font-size: 12px;
-            color: #787b86;
-        }
-
-        .stock-price {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
         }
 
-        .price-up { color: #26a69a; }
-        .price-down { color: #ef5350; }
+        .stock-code {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .stock-price {
+            font-size: 32px;
+            font-weight: 800;
+        }
 
         .stock-change {
-            font-size: 14px;
-            padding: 4px 8px;
-            border-radius: 4px;
+            font-size: 16px;
+            padding: 6px 12px;
+            border-radius: 6px;
             margin-left: 10px;
+            background: rgba(255,255,255,0.2);
         }
 
-        .change-up {
-            background: rgba(38, 166, 154, 0.2);
-            color: #26a69a;
-        }
-
-        .change-down {
-            background: rgba(239, 83, 80, 0.2);
-            color: #ef5350;
+        .chart-container {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            height: 200px;
         }
 
         .stock-info {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-            font-size: 13px;
+            gap: 12px;
+            margin-top: 15px;
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 8px;
         }
 
         .info-row {
@@ -133,98 +135,37 @@
         }
 
         .info-label {
-            color: #787b86;
+            opacity: 0.9;
+            font-size: 13px;
         }
 
         .info-value {
-            color: #d1d4dc;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 14px;
         }
 
         .signal-status {
             display: flex;
-            gap: 5px;
-            margin-top: 10px;
-            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+            justify-content: center;
         }
 
         .signal {
-            width: 30px;
-            height: 30px;
-            border-radius: 4px;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 20px;
+            background: rgba(255,255,255,0.2);
         }
-
-        .signal.green { background: rgba(38, 166, 154, 0.2); }
-        .signal.red { background: rgba(239, 83, 80, 0.2); }
 
         .rating {
-            color: #ffd700;
-            font-size: 14px;
-        }
-
-        .news-item {
-            background: #2a2e39;
-            border-radius: 8px;
-            padding: 0;
-            margin-bottom: 15px;
-            overflow: hidden;
-            transition: transform 0.2s;
-        }
-
-        .news-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
-        .news-image {
-            width: 100%;
-            height: 150px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            color: rgba(255,255,255,0.3);
-        }
-
-        .news-content {
-            padding: 15px;
-        }
-
-        .news-time {
-            font-size: 11px;
-            color: #787b86;
-            margin-bottom: 8px;
-        }
-
-        .news-title {
-            font-size: 15px;
+            color: #f39c12;
+            font-size: 16px;
             font-weight: 600;
-            color: #fff;
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
-        .news-desc {
-            font-size: 13px;
-            color: #d1d4dc;
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
-
-        .news-tag {
-            display: inline-block;
-            background: rgba(79, 195, 247, 0.2);
-            color: #4fc3f7;
-            padding: 3px 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            margin-right: 5px;
-            margin-top: 5px;
         }
 
         .news-grid {
@@ -233,17 +174,92 @@
             gap: 15px;
         }
 
-        @media (max-width: 900px) {
-            .news-grid {
-                grid-template-columns: 1fr;
-            }
+        .news-item {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e8ecf1;
+            transition: all 0.3s;
+        }
+
+        .news-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .news-content {
+            padding: 16px;
+        }
+
+        .news-time {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-bottom: 8px;
+        }
+
+        .news-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .news-desc {
+            font-size: 14px;
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .news-tag {
+            display: inline-block;
+            background: #e8f4fd;
+            color: #3498db;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-right: 6px;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        .news-tag.down {
+            background: #ffe8e8;
+            color: #e74c3c;
+        }
+
+        .alert-box {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(253, 203, 110, 0.3);
+        }
+
+        .alert-title {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 16px;
         }
 
         .checklist-item {
             display: flex;
             align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #2a2e39;
+            padding: 12px 0;
+            border-bottom: 1px solid #ecf0f1;
         }
 
         .checklist-item:last-child {
@@ -251,92 +267,67 @@
         }
 
         .check-icon {
-            width: 20px;
-            height: 20px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            margin-right: 10px;
+            margin-right: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 16px;
         }
 
         .check-icon.pass {
-            background: rgba(38, 166, 154, 0.2);
-            color: #26a69a;
+            background: #d4edda;
+            color: #27ae60;
         }
 
         .check-icon.fail {
-            background: rgba(239, 83, 80, 0.2);
-            color: #ef5350;
+            background: #f8d7da;
+            color: #e74c3c;
         }
 
         .action-btn {
-            background: #4fc3f7;
-            color: #131722;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
             border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 700;
             cursor: pointer;
-            font-size: 13px;
-            margin-top: 10px;
+            font-size: 14px;
+            margin-top: 12px;
             width: 100%;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
         }
 
         .action-btn:hover {
-            background: #29b6f6;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
 
-        .action-btn.danger {
-            background: #ef5350;
+        .status-good {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
             color: #fff;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(86, 171, 47, 0.3);
         }
 
-        .alert-box {
-            background: rgba(255, 193, 7, 0.1);
-            border-left: 4px solid #ffc107;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-
-        .alert-title {
-            color: #ffc107;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .youtube-section {
-            background: #2a2e39;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        .youtube-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 10px;
-        }
-
-        .youtube-stocks {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .youtube-tag {
-            background: rgba(255, 82, 82, 0.2);
-            color: #ff5252;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 12px;
+        .status-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
 
         @media (max-width: 1200px) {
             .container {
+                grid-template-columns: 1fr;
+            }
+            .news-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -345,7 +336,7 @@
 <body>
     <div class="header">
         <h1>📊 KW 交易儀表板</h1>
-        <div class="last-update">最後更新：2026-02-24 10:58 GMT+8</div>
+        <div class="last-update">最後更新：2026-02-24 11:35 GMT+8</div>
     </div>
 
     <div class="container">
@@ -354,18 +345,22 @@
             <div class="panel">
                 <div class="panel-title">🔥 目前持股</div>
                 
-                <div class="stock-card strong">
+                <div class="stock-card">
                     <div class="stock-header">
                         <div>
                             <div class="stock-name">山太士</div>
                             <div class="stock-code">3595.TW</div>
                         </div>
                         <div style="text-align: right;">
-                            <span class="stock-price price-up">720</span>
-                            <span class="stock-change change-up">+10.4%</span>
+                            <span class="stock-price">720</span>
+                            <span class="stock-change">+10.4%</span>
                         </div>
                     </div>
                     
+                    <div class="chart-container">
+                        <canvas id="chart3595"></canvas>
+                    </div>
+
                     <div class="stock-info">
                         <div class="info-row">
                             <span class="info-label">進場價</span>
@@ -373,7 +368,7 @@
                         </div>
                         <div class="info-row">
                             <span class="info-label">獲利率</span>
-                            <span class="info-value price-up">-</span>
+                            <span class="info-value">-</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">停損點</span>
@@ -381,7 +376,7 @@
                         </div>
                         <div class="info-row">
                             <span class="info-label">安全墊</span>
-                            <span class="info-value price-up">+28.3%</span>
+                            <span class="info-value">+28.3%</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">MA45</span>
@@ -394,13 +389,13 @@
                     </div>
 
                     <div class="signal-status">
-                        <div class="signal green">✅</div>
-                        <div class="signal green">✅</div>
-                        <div class="signal green">✅</div>
-                        <div class="signal green">✅</div>
-                        <div class="signal green">✅</div>
+                        <div class="signal">✅</div>
+                        <div class="signal">✅</div>
+                        <div class="signal">✅</div>
+                        <div class="signal">✅</div>
+                        <div class="signal">✅</div>
                     </div>
-                    <div style="font-size: 12px; color: #26a69a; margin-top: 8px;">
+                    <div style="text-align: center; margin-top: 12px; font-weight: 600;">
                         續抱訊號：全滿 - 繼續持有
                     </div>
                 </div>
@@ -416,12 +411,16 @@
                             <div class="stock-code">6770.TW</div>
                         </div>
                         <div style="text-align: right;">
-                            <span class="stock-price price-up">73.4</span>
-                            <span class="stock-change change-up">+9.55%</span>
+                            <span class="stock-price">73.4</span>
+                            <span class="stock-change">+9.55%</span>
                         </div>
                     </div>
                     
-                    <div class="rating">⭐⭐⭐⭐⭐ 最穩健</div>
+                    <div class="chart-container">
+                        <canvas id="chart6770"></canvas>
+                    </div>
+
+                    <div class="rating" style="margin-top: 12px;">⭐⭐⭐⭐⭐ 最穩健</div>
                     
                     <div class="stock-info">
                         <div class="info-row">
@@ -437,19 +436,23 @@
                     <button class="action-btn">✅ 建議加碼</button>
                 </div>
 
-                <div class="stock-card watch">
+                <div class="stock-card watch" style="margin-top: 15px;">
                     <div class="stock-header">
                         <div>
                             <div class="stock-name">南電</div>
                             <div class="stock-code">8046.TW</div>
                         </div>
                         <div style="text-align: right;">
-                            <span class="stock-price price-up">503</span>
-                            <span class="stock-change change-up">+9.95%</span>
+                            <span class="stock-price">503</span>
+                            <span class="stock-change">+9.95%</span>
                         </div>
                     </div>
                     
-                    <div class="rating">⭐⭐⭐⭐ 觀察突破</div>
+                    <div class="chart-container">
+                        <canvas id="chart8046"></canvas>
+                    </div>
+
+                    <div class="rating" style="margin-top: 12px;">⭐⭐⭐⭐ 觀察突破</div>
                     
                     <div class="stock-info">
                         <div class="info-row">
@@ -462,24 +465,24 @@
                         </div>
                     </div>
 
-                    <button class="action-btn" style="background: #787b86;">⏸️ 觀察站穩</button>
+                    <button class="action-btn" style="background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);">⏸️ 觀察站穩</button>
                 </div>
             </div>
         </div>
 
-        <!-- 中央：最新消息 + YouTube -->
+        <!-- 中央：最新消息 -->
         <div class="center-panel">
             <div class="panel">
                 <div class="panel-title">📰 今日市場動態</div>
                 
                 <div class="alert-box">
                     <div class="alert-title">⚡ 今日重點</div>
-                    <div style="font-size: 13px;">PCB/載板族群集體噴發，山太士領漲 +10.4%，南電、景碩接近漲停。記憶體板塊同步上漲。</div>
+                    <div style="font-size: 14px; color: #2c3e50;">PCB/載板族群集體噴發，山太士領漲 +10.4%，南電、景碩接近漲停。記憶體板塊同步上漲。</div>
                 </div>
 
                 <div class="news-grid">
                     <div class="news-item">
-                        <div class="news-image">📈</div>
+                        <div class="news-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">📈</div>
                         <div class="news-content">
                             <div class="news-time">2026-02-24 13:30</div>
                             <div class="news-title">台股 PCB 族群領漲 山太士創新高</div>
@@ -495,7 +498,7 @@
                     </div>
 
                     <div class="news-item">
-                        <div class="news-image">💾</div>
+                        <div class="news-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">💾</div>
                         <div class="news-content">
                             <div class="news-time">2026-02-24 11:00</div>
                             <div class="news-title">記憶體板塊走強 力積電大漲</div>
@@ -510,7 +513,7 @@
                     </div>
 
                     <div class="news-item">
-                        <div class="news-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">📡</div>
+                        <div class="news-image" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">📡</div>
                         <div class="news-content">
                             <div class="news-time">2026-02-24 10:00</div>
                             <div class="news-title">被動元件強勢 華新科接近漲停</div>
@@ -525,7 +528,7 @@
                     </div>
 
                     <div class="news-item">
-                        <div class="news-image" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">⚠️</div>
+                        <div class="news-image" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">⚠️</div>
                         <div class="news-content">
                             <div class="news-time">2026-02-24 13:30</div>
                             <div class="news-title">下跌警示：一詮重挫 7%</div>
@@ -533,8 +536,8 @@
                                 精密齒輪廠一詮今日下跌 7.30%，需留意後續走勢。另外旺矽、健策小幅下跌。
                             </div>
                             <div>
-                                <span class="news-tag" style="background: rgba(239, 83, 80, 0.2); color: #ef5350;">一詮 -7.30%</span>
-                                <span class="news-tag" style="background: rgba(239, 83, 80, 0.2); color: #ef5350;">旺矽 -2.50%</span>
+                                <span class="news-tag down">一詮 -7.30%</span>
+                                <span class="news-tag down">旺矽 -2.50%</span>
                             </div>
                         </div>
                     </div>
@@ -544,41 +547,27 @@
             <div class="panel" style="margin-top: 20px;">
                 <div class="panel-title">📺 理財達人秀 - 潛在標的</div>
                 
-                <div class="youtube-section">
-                    <div class="youtube-title">🎬 最新一集（待更新）</div>
-                    <div style="font-size: 12px; color: #787b86; margin-bottom: 10px;">
+                <div style="background: #f8f9fa; border-radius: 8px; padding: 16px;">
+                    <div style="font-weight: 600; margin-bottom: 10px;">🎬 最新一集（待更新）</div>
+                    <div style="font-size: 13px; color: #7f8c8d; margin-bottom: 10px;">
                         更新時間：-
                     </div>
-                    <div class="youtube-stocks">
-                        <span class="youtube-tag">待抓取字幕</span>
+                    <div>
+                        <span class="news-tag">待抓取字幕</span>
                     </div>
                 </div>
 
-                <div style="font-size: 12px; color: #787b86; margin-top: 10px;">
+                <div style="font-size: 13px; color: #95a5a6; margin-top: 15px;">
                     💡 每日自動抓取東森財經理財達人秀最新影片，提取提到的標的
-                </div>
-            </div>
-
-            <div class="panel" style="margin-top: 20px;">
-                <div class="panel-title">📊 Minervini 美股篩選</div>
-                <div style="font-size: 13px; color: #787b86;">
-                    <a href="https://www.chartmill.com/trading-ideas/703-Mark-Minervini-Trend-Template-FA-Screen-6" 
-                       target="_blank" 
-                       style="color: #4fc3f7; text-decoration: none;">
-                        🔗 Chartmill 篩選器
-                    </a>
-                </div>
-                <div style="font-size: 12px; color: #787b86; margin-top: 10px;">
-                    待手動檢查並更新符合條件的美股標的
                 </div>
             </div>
         </div>
 
-        <!-- 右側：檢查清單 + 提醒 -->
+        <!-- 右側：檢查清單 -->
         <div class="right-panel">
             <div class="panel">
                 <div class="panel-title">✅ 持股檢查清單</div>
-                <div style="font-size: 12px; color: #787b86; margin-bottom: 15px;">山太士 3595</div>
+                <div style="font-size: 13px; color: #7f8c8d; margin-bottom: 15px;">山太士 3595</div>
                 
                 <div class="checklist-item">
                     <div class="check-icon pass">✓</div>
@@ -601,60 +590,40 @@
                     <div>持續創新高</div>
                 </div>
 
-                <div style="background: rgba(38, 166, 154, 0.1); padding: 12px; border-radius: 6px; margin-top: 15px; text-align: center;">
-                    <div style="font-size: 14px; font-weight: 600; color: #26a69a;">
-                        ✅ 續抱訊號：全滿
-                    </div>
-                    <div style="font-size: 12px; color: #787b86; margin-top: 5px;">
-                        繼續持有，訊號未到不要賣
-                    </div>
+                <div class="status-good">
+                    <div class="status-title">✅ 續抱訊號：全滿</div>
+                    <div style="font-size: 13px;">繼續持有，訊號未到不要賣</div>
                 </div>
             </div>
 
             <div class="panel" style="margin-top: 20px;">
                 <div class="panel-title">🚨 出場訊號</div>
                 
-                <div style="font-size: 13px; margin-bottom: 15px;">
-                    <div style="color: #787b86; margin-bottom: 8px;">強勢股（山太士）：</div>
-                    <div style="background: #2a2e39; padding: 10px; border-radius: 4px;">
+                <div style="font-size: 14px; margin-bottom: 15px;">
+                    <div style="color: #7f8c8d; margin-bottom: 10px; font-weight: 600;">強勢股（山太士）：</div>
+                    <div style="background: #ffe8e8; padding: 12px; border-radius: 8px; border-left: 4px solid #e74c3c;">
                         跌破 Daily MA10<br>
-                        <span style="color: #ef5350; font-weight: 600;">停損點：561</span>
+                        <span style="color: #e74c3c; font-weight: 700;">停損點：561</span>
                     </div>
                 </div>
 
-                <div style="font-size: 13px;">
-                    <div style="color: #787b86; margin-bottom: 8px;">趨勢股：</div>
-                    <div style="background: #2a2e39; padding: 10px; border-radius: 4px;">
+                <div style="font-size: 14px;">
+                    <div style="color: #7f8c8d; margin-bottom: 10px; font-weight: 600;">趨勢股：</div>
+                    <div style="background: #fff3cd; padding: 12px; border-radius: 8px; border-left: 4px solid #ffc107;">
                         跌破 Weekly MA10<br>
-                        <span style="color: #ef5350; font-weight: 600;">= Daily MA45</span>
+                        <span style="color: #f39c12; font-weight: 700;">= Daily MA45</span>
                     </div>
                 </div>
 
-                <div style="font-size: 11px; color: #787b86; margin-top: 15px; padding: 10px; background: #2a2e39; border-radius: 4px;">
+                <div style="font-size: 12px; color: #7f8c8d; margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px;">
                     💡 只有訊號出現才賣出<br>
                     不要因為恐懼而提前賣
                 </div>
             </div>
 
             <div class="panel" style="margin-top: 20px;">
-                <div class="panel-title">📅 本週待辦</div>
-                
-                <div style="font-size: 13px;">
-                    <div style="padding: 8px 0; border-bottom: 1px solid #2a2e39;">
-                        ⏳ 觀察力積電進場點
-                    </div>
-                    <div style="padding: 8px 0; border-bottom: 1px solid #2a2e39;">
-                        ⏳ 南電能否站穩 500
-                    </div>
-                    <div style="padding: 8px 0;">
-                        ⏳ 查詢法人買賣數據
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel" style="margin-top: 20px;">
                 <div class="panel-title">💡 交易紀律提醒</div>
-                <div style="font-size: 12px; line-height: 1.8;">
+                <div style="font-size: 14px; line-height: 2; color: #34495e;">
                     1. 訊號未到，不要賣<br>
                     2. 用數據說服自己<br>
                     3. 讓利潤奔跑<br>
@@ -666,6 +635,46 @@
     </div>
 
     <script>
+        // 創建走勢圖
+        function createChart(canvasId, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            
+            // 模擬數據（未來會用真實數據）
+            const data = {
+                labels: ['', '', '', '', '', '', '', '', '', ''],
+                datasets: [{
+                    data: [500, 520, 510, 540, 560, 550, 580, 600, 650, 720],
+                    borderColor: color,
+                    backgroundColor: `${color}33`,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    }
+                }
+            });
+        }
+
+        // 初始化圖表
+        createChart('chart3595', '#fff');
+        createChart('chart6770', '#fff');
+        createChart('chart8046', '#fff');
+
         // 自動更新時間戳
         function updateTimestamp() {
             const now = new Date();
@@ -680,7 +689,6 @@
             document.querySelector('.last-update').textContent = `最後更新：${formatted} GMT+8`;
         }
 
-        // 每分鐘更新一次時間戳
         setInterval(updateTimestamp, 60000);
     </script>
 </body>
